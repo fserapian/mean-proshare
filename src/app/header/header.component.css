@@ -21,3 +21,7 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+.selected {
+  text-decoration: underline;
+}
