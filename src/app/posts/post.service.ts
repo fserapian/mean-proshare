@@ -15,7 +15,6 @@ export class PostService {
   constructor(private http: HttpClient) { }
 
   getPosts(): void {
-    // return [...this.posts];
     this.http.get<{ message: string, posts: any }>(this.url)
       .pipe(
         map((res) => res.posts.map((post: { _id: string, title: string, content: string }) => {
@@ -30,6 +29,11 @@ export class PostService {
         this.posts = posts;
         this.postsUpdated.next([...this.posts]);
       });
+  }
+
+  getPost(id: string): Observable<{ _id: string, title: string, content: string }> {
+    // return { ...this.posts.find(post => post.id === id) };
+    return this.http.get<{ _id: string, title: string, content: string }>(this.url + id);
   }
 
   getPostsUpdatedListener() {
@@ -47,6 +51,20 @@ export class PostService {
         const postId = res.postId;
         post.id = postId;
         this.posts.push(post);
+        this.postsUpdated.next([...this.posts]);
+      });
+  }
+
+  updatePost(id: string, title: string, content: string) {
+
+    const post = { id, title, content };
+
+    this.http.put<{ message: string }>(this.url + id, post)
+      .subscribe(res => {
+        const updatedPosts = [...this.posts];
+        const postIndex = updatedPosts.findIndex(p => p.id === post.id);
+        updatedPosts[postIndex] = post;
+        this.posts = updatedPosts;
         this.postsUpdated.next([...this.posts]);
       });
   }

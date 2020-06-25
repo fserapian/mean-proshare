@@ -5,7 +5,7 @@
         type="text"
         matInput
         name="title"
-        ngModel
+        [ngModel]="post?.title"
         #title="ngModel"
         required
       />
@@ -17,7 +17,7 @@
         cols="5"
         rows="3"
         name="content"
-        ngModel
+        [ngModel]="post?.content"
         #content="ngModel"
         required
       >
