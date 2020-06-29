@@ -7,10 +7,17 @@
         name="title"
         [ngModel]="post?.title"
         #title="ngModel"
+        placeholder="Post title"
         required
       />
       <mat-error *ngIf="title.invalid">Title is required</mat-error>
     </mat-form-field>
+    <div>
+      <button type="button" mat-stroked-button (click)="filePicker.click()">
+        Choose a file
+      </button>
+      <input type="file" #filePicker />
+    </div>
     <mat-form-field>
       <textarea
         matInput
@@ -19,12 +26,13 @@
         name="content"
         [ngModel]="post?.content"
         #content="ngModel"
+        placeholder="Post content"
         required
       >
       </textarea>
       <mat-error *ngIf="title.invalid">Content is required</mat-error>
     </mat-form-field>
-    <button mat-raised-button color="accent" type="submit">
+    <button mat-raised-button color="accent" type="submit" class="save-btn">
       Save post
     </button>
   </form>
