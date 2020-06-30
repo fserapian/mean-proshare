@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Post } from '../post.model';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostService } from '../post.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
@@ -19,6 +19,7 @@ export class PostCreateComponent implements OnInit {
   post: Post;
   postId: string;
   mode: Mode = Mode.CREATE;
+  form: FormGroup
 
   constructor(
     private postService: PostService,
@@ -26,13 +27,13 @@ export class PostCreateComponent implements OnInit {
     private router: Router
   ) { }
 
-  onSavePost(form: NgForm) {
-    if (form.invalid) {
+  onSavePost() {
+    if (this.form.invalid) {
       return;
     }
 
-    const title = form.value.title;
-    const content = form.value.content;
+    const title = this.form.value.title;
+    const content = this.form.value.content;
 
     if (this.mode === Mode.CREATE) {
       this.postService.addPost(title, content);
@@ -42,17 +43,26 @@ export class PostCreateComponent implements OnInit {
       this.router.navigate(['/']);
     }
 
-    form.resetForm();
+    this.form.reset();
 
   }
 
   ngOnInit() {
+
+    this.form = new FormGroup({
+      'title': new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
+      'content': new FormControl(null, { validators: [Validators.required] })
+    });
+
     this.route.paramMap.subscribe((params: ParamMap) => {
       if (params.has('postId')) {
         this.mode = Mode.UPDATE;
         this.postId = params.get('postId');
         this.postService.getPost(this.postId)
-          .subscribe((post) => this.post = { id: post._id, title: post.title, content: post.content });
+          .subscribe((post) => {
+            this.post = { id: post._id, title: post.title, content: post.content };
+            this.form.setValue({ 'title': this.post.title, 'content': this.post.content });
+          });
       } else {
         this.mode = Mode.CREATE;
         this.postId = null;

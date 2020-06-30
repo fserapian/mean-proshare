@@ -1,16 +1,14 @@
 <mat-card>
-  <form #f="ngForm" (ngSubmit)="onSavePost(f)">
+  <form [formGroup]="form" (ngSubmit)="onSavePost()">
     <mat-form-field>
       <input
         type="text"
         matInput
-        name="title"
-        [ngModel]="post?.title"
-        #title="ngModel"
         placeholder="Post title"
+        formControlName="title"
         required
       />
-      <mat-error *ngIf="title.invalid">Title is required</mat-error>
+      <mat-error *ngIf="form.get('title').invalid">Title is required</mat-error>
     </mat-form-field>
     <div>
       <button type="button" mat-stroked-button (click)="filePicker.click()">
@@ -23,14 +21,14 @@
         matInput
         cols="5"
         rows="3"
-        name="content"
-        [ngModel]="post?.content"
-        #content="ngModel"
         placeholder="Post content"
+        formControlName="content"
         required
       >
       </textarea>
-      <mat-error *ngIf="title.invalid">Content is required</mat-error>
+      <mat-error *ngIf="form.get('content').invalid"
+        >Content is required</mat-error
+      >
     </mat-form-field>
     <button mat-raised-button color="accent" type="submit" class="save-btn">
       Save post
