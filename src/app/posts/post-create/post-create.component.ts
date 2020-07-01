@@ -3,6 +3,7 @@ import { Post } from '../post.model';
 import { NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostService } from '../post.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { mimeType } from './mime-type.validator';
 
 enum Mode {
   CREATE,
@@ -20,12 +21,23 @@ export class PostCreateComponent implements OnInit {
   postId: string;
   mode: Mode = Mode.CREATE;
   form: FormGroup
+  imagePreview: string;
 
   constructor(
     private postService: PostService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
+
+  onImagePicked(e: Event) {
+    const file = (e.target as HTMLInputElement).files[0];
+    console.log(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    }
+    reader.readAsDataURL(file);
+  }
 
   onSavePost() {
     if (this.form.invalid) {
@@ -51,7 +63,8 @@ export class PostCreateComponent implements OnInit {
 
     this.form = new FormGroup({
       'title': new FormControl(null, { validators: [Validators.required, Validators.minLength(3)] }),
-      'content': new FormControl(null, { validators: [Validators.required] })
+      'content': new FormControl(null, { validators: [Validators.required] }),
+      'image': new FormControl(null, { validators: [Validators.required], asyncValidators: [mimeType] })
     });
 
     this.route.paramMap.subscribe((params: ParamMap) => {
